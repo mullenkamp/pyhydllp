@@ -1,5 +1,5 @@
 """
-Functions to read in Hydstra data. Requires a 32bit python environment.
+Functions to read in Hydstra data. Requires a 32bit python environment due to the hydllp.dll file being 32bit.
 """
 
 import ctypes
@@ -10,13 +10,28 @@ import pandas as pd
 # Define a context manager generator
 # that creates and releases the connection to the hydstra server
 @contextlib.contextmanager
-def openHyDb(ini_path=r'\\fileservices02\ManagedShares\Data\Hydstra\prod\hyd', dll_path=r'\\fileservices02\ManagedShares\Data\Hydstra\prod\hyd\sys\run', username='', password=''):
-    hyd = Hydllp(dll_path=dll_path, ini_path=ini_path)
+def openHyDb(hydllp, username=None, password=None):
+    """
+    Hydllp content manager generator.
+
+    Parameters
+    ----------
+    hydllp : Hydllp
+        An initialised Hydllp object.
+    username : str
+        The login username for Hydstra. Leave a blank str to have Hydstra use the local user machine username.
+    password : str
+        Same as username, but for password.
+
+    Returns
+    -------
+    Generator
+    """
     try:
-        hyd.login(username, password)
-        yield hyd
+        hydllp.login(username, password)
+        yield hydllp
     finally:
-        hyd.logout()
+        hydllp.logout()
 
 
 # Exception for hydstra related errors
@@ -29,12 +44,7 @@ class HydstraErrorUnknown(HydstraError):
 
 
 class Hydllp(object):
-    def __init__(self,
-                 dll_path,
-                 ini_path,
-                 hydllp_filename='hydllp.dll',
-                 hyaccess_filename='Hyaccess.ini',
-                 hyconfig_filename='HYCONFIG.INI'):
+    def __init__(self, ini_path, dll_path, hydllp_filename, hyaccess_filename, hyconfig_filename, username='', password=''):
 
         self._dll_path = dll_path
         self._ini_path = ini_path
@@ -42,6 +52,9 @@ class Hydllp(object):
         self._dll_filename = os.path.join(self._dll_path, hydllp_filename)
         self._hyaccess_filename = os.path.join(self._ini_path, hyaccess_filename)
         self._hyconfig_filename = os.path.join(self._ini_path, hyconfig_filename)
+
+        self._username = username
+        self._password = password
 
         # See Hydstra Help file
         # According to the HYDLLP doc, the hydll.dll needs to run "in situ" since
@@ -67,8 +80,8 @@ class Hydllp(object):
 
         Parameters
         ----------
-            -error_code, int
-                The error code returned by startup_ex
+        error_code : int
+            The error code returned by startup_ex
         """
 
         # Reference the DecodeError dll function
@@ -94,17 +107,17 @@ class Hydllp(object):
 
         Parameters
         ----------
-            -user, str
-                Hydstra username
+        user : str
+            Hydstra username
 
-            -password, str
-                Hydstra password
+        password : str
+            Hydstra password
 
-            -hyaccess, str
-                Fullpath to HYACCESS.INI
+        hyaccess : str
+            Fullpath to HYACCESS.INI
 
-            -hyconfig
-                Fullpath to HYCONFIG.INI
+        hyconfig : str
+            Fullpath to HYCONFIG.INI
         """
 
         startUpEx_lib = self._dll['StartUpEx']
@@ -124,7 +137,7 @@ class Hydllp(object):
 
         Parameters
         ----------
-            None
+        None
         """
 
         shutdown_lib = self._dll['ShutDown']
@@ -146,7 +159,7 @@ class Hydllp(object):
         jsonCall_lib.restype = ctypes.c_int
 
         # Allocate memory for the return string
-        return_str = ctypes.create_string_buffer(" ", return_str_len)
+        return_str = ctypes.create_string_buffer(" ".encode('ascii'), return_str_len)
 
         # c_return_str = ctypes.c_char_p(return_str)
 
@@ -164,23 +177,28 @@ class Hydllp(object):
     # End - Define HYDLLP Wrappers
     # ********************************************************************************
 
-    def login(self, username, password):
+    def login(self, username=None, password=None):
         """
         Logs into hydstra using StartUpEx
 
         Parameters:
         -----------
-            -username, str
-                Hydstra username
+        username : str
+            Hydstra username
 
-            -passwords, str
-                Hydstra password
+        passwords : str
+            Hydstra password
 
         """
-        error_code = self._start_up_ex(username,
-                                       password,
-                                       self._hyaccess_filename,
-                                       self._hyconfig_filename)
+        if not isinstance(username, str):
+            username = self._username
+        if not isinstance(password, str):
+            password = self._password
+
+        error_code = self._start_up_ex(username.encode('ascii'),
+                                       password.encode('ascii'),
+                                       self._hyaccess_filename.encode('ascii'),
+                                       self._hyconfig_filename.encode('ascii'))
 
         # Values other than 0 means that an error occured
         if error_code != 0:
@@ -195,7 +213,7 @@ class Hydllp(object):
 
         Parameters:
         ----------
-            None
+        None
         """
         if self._logged_in:
             self._shutdown()
@@ -211,7 +229,7 @@ class Hydllp(object):
         buffer_len = 1400
 
         # convert request dict to a json string
-        request_json = json.dumps(request_dict)
+        request_json = json.dumps(request_dict).encode('ascii')
 
         # call json_call and convert result to python dictionary
         result_json = self._json_call(request_json, buffer_len)
@@ -426,4 +444,3 @@ class Hydllp(object):
 
         return out2
 
-# End Class

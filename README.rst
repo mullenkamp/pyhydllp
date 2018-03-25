@@ -1,3 +1,3 @@
 pyhydllp
 ==========
-pyhydllp is a package that cntains many Python functions for extracting data from Hydstra.
+pyhydllp is a package that contains many Python functions for extracting data from Hydstra.
