@@ -15,6 +15,10 @@ def get_ts_data_bulk(self, server, database, varto, sites=None, data_source='A',
 
     Parameters
     ----------
+    server : str
+        The SQL server name.
+    database : str
+        The database name.
     varto : int or float
         The hydstra conversion data variable (140.00 is flow).
     sites: list of str
@@ -170,6 +174,10 @@ def sites_var_periods(self, server, database, varto=None, sites=None, data_sourc
 
     Parameters
     ----------
+    server : str
+        The SQL server name.
+    database : str
+        The database name.
     varto : int or float
         The hydstra conversion data variable (140.00 is flow).
     sites: list of str
