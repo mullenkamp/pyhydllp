@@ -38,5 +38,5 @@ def test_sites_var_periods():
 
 def test_get_ts_data_bulk():
     tsdata = hyd1.get_ts_data_bulk(server=server, database=database, varto=varto, sites=sites, from_mod_date=from_mod_date, to_mod_date=to_mod_date, interval='day', qual_codes=[30, 20, 10, 11, 21, 18], concat_data=True)
-    assert (len(tsdata) == 1291) & (len(tsdata.columns) == 3)
+    assert len(tsdata.columns) == 3
 
