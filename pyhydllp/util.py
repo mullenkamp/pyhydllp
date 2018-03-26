@@ -63,3 +63,34 @@ def save_df(df, path_str, index=True, header=True):
         df.to_hdf(path_str, 'df', mode='w')
     if path1[1] in '.csv':
         df.to_csv(path_str, index=index, header=header)
+
+
+def site_mod_time(site_files_path, sites=None):
+    """
+    Function to extract modification times from Hydstra data archive files. Returns a DataFrame of sites by modification date. The modification date is in GMT.
+
+    Parameters
+    ----------
+    site_files_path : str
+        Path to the Hydstra ts data files. Something like r'\\fileservices02\ManagedShares\Data\Hydstra\prod\hyd\dat\hyd'.
+    sites : list, array, Series, or None
+        If sites is not None, then return only the given sites.
+
+    Returns
+    -------
+    DataFrame
+    """
+    files1 = rd_dir(site_files_path, 'A')
+    file_sites = [os.path.splitext(i)[0] for i in files1]
+
+    if sites is not None:
+        sites1 = select_sites(sites).astype(str)
+        sites2 = [i.replace('/', '_') for i in sites1]
+        file_sites1 = [i for i in file_sites if i in sites2]
+    else:
+        file_sites1 = file_sites
+
+    mod_times = pd.to_datetime([round(os.path.getmtime(os.path.join(site_files_path, i + '.A'))) for i in file_sites1], unit='s')
+
+    df = pd.DataFrame({'site': file_sites1, 'mod_time': mod_times})
+    return df
