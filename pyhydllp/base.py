@@ -10,7 +10,7 @@ from datetime import date
 from pyhydllp import util, hydllp
 
 
-def get_ts_blockinfo(self, sites, datasources=['A'], variables=['100', '10', '110', '140', '130', '143', '450'], start='1900-01-01', end='2100-01-01', start_modified='1900-01-01', end_modified='2100-01-01'):
+def get_ts_blockinfo(self, sites, datasources=['A'], variables=['100', '10', '110', '140', '130', '143', '450'], start='1900-01-01', end='2100-01-01', from_mod_date='1900-01-01', to_mod_date='2100-01-01'):
     """
     Wrapper function to extract info about when data has changed between modification dates.
 
@@ -26,9 +26,9 @@ def get_ts_blockinfo(self, sites, datasources=['A'], variables=['100', '10', '11
         The start time in the format of '2001-01-01'.
     end : str
         Same formatting as start.
-    start_modified: str
+    from_mod_date : str
         The starting date of the modification.
-    end_modified: str
+    to_mod_date : str
         The ending date of the modification.
 
     Returns
@@ -41,7 +41,7 @@ def get_ts_blockinfo(self, sites, datasources=['A'], variables=['100', '10', '11
 
     ### Extract data
     with hydllp.openHyDb(self.hydllp) as h:
-        df = h.get_ts_blockinfo(sites1, start=start, end=end, datasources=datasources, variables=variables, start_modified=start_modified, end_modified=end_modified)
+        df = h.get_ts_blockinfo(sites1, start=start, end=end, datasources=datasources, variables=variables, from_mod_date=from_mod_date, to_mod_date=to_mod_date)
     return df
 
 
@@ -76,7 +76,7 @@ def ts_data_changes(self, varto, sites, data_source='A', from_mod_date=None, to_
             to_mod_date1 = pd.Timestamp(to_mod_date)
         else:
             to_mod_date1 = today1
-        blocklist = self.get_ts_blockinfo(sites, [data_source], variables=varto, start_modified=from_mod_date1, end_modified=to_mod_date1)
+        blocklist = self.get_ts_blockinfo(sites, [data_source], variables=varto, from_mod_date=from_mod_date1, to_mod_date=to_mod_date1)
         if blocklist.empty:
             return blocklist
         else:

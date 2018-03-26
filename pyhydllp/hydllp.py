@@ -336,7 +336,7 @@ class Hydllp(object):
 
         return (db_area_result["return"]["sites"])
 
-    def get_ts_blockinfo(self, site_list, datasources=['A'], variables=['100', '10', '110', '140', '130', '143', '450'], start='1900-01-01', end='2100-01-01', start_modified='1900-01-01', end_modified='2100-01-01', fill_gaps=0, auditinfo=0):
+    def get_ts_blockinfo(self, site_list, datasources=['A'], variables=['100', '10', '110', '140', '130', '143', '450'], start='1900-01-01', end='2100-01-01', from_mod_date='1900-01-01', to_mod_date='2100-01-01', fill_gaps=0, auditinfo=0):
         """
 
         """
@@ -352,8 +352,8 @@ class Hydllp(object):
         ### Datetime conversion
         start = pd.Timestamp(start).strftime('%Y%m%d%H%M%S')
         end = pd.Timestamp(end).strftime('%Y%m%d%H%M%S')
-        start_modified = pd.Timestamp(start_modified).strftime('%Y%m%d%H%M%S')
-        end_modified = pd.Timestamp(end_modified).strftime('%Y%m%d%H%M%S')
+        start_modified = pd.Timestamp(from_mod_date).strftime('%Y%m%d%H%M%S')
+        end_modified = pd.Timestamp(to_mod_date).strftime('%Y%m%d%H%M%S')
 
         ### dict request
         ts_blockinfo_request = {"function": "get_ts_blockinfo",
