@@ -126,3 +126,70 @@ def sql_sites_var(server, database, varto=None, data_source='A'):
     return period3
 
 
+def gaugings(server, database, sites, mtypes=['wl', 'flow'], from_date=None, to_date=None, stacked=False):
+    """
+    Function to extract gaugings data from Hydstra SQL.
+
+    Parameters
+    ----------
+    server : str
+        The SQL server name.
+    database : str
+        The database name.
+    sites: list
+        List of sites to be extracted.
+    mtypes: list
+        List of generic measurement types to be extracted (see note).
+    from_date: str or None
+        The start date that should be extracted.
+    to_date: str or None
+        The end date that should be extracted.
+    stacked: bool
+        Should the mtypes and data be stacked or not.
+
+    Returns
+    -------
+    DataFrame
+
+    Notes
+    -----
+    The supported mtypes are:
+        wl, flow
+    """
+    ### Extract the mtype codes
+    mtype_dict = {'wl': 'M_GH', 'flow': 'FLOW'}
+
+    mtypes_code = [mtype_dict[i] for i in mtypes if i in mtype_dict]
+
+    ### Extract the gaugings
+    cols = ['STN', 'MEAS_DATE', 'END_TIME']
+    cols.extend(mtypes_code)
+    cols.extend(['QUALITY'])
+    rename_cols = ['site', 'date', 'time']
+    rename_cols.extend(mtypes)
+    rename_cols.extend(['qual_code'])
+    g1 = pdsql.mssql.rd_sql(server, database, 'GAUGINGS', cols, {'STN': sites}, from_date=from_date, to_date=to_date, date_col='MEAS_DATE', rename_cols=rename_cols)
+    g1.site = g1.site.str.strip()
+    dt1 = pd.to_datetime(g1.date.astype(str) + ' ' + g1.time.astype(int).astype(str), format='%Y-%m-%d %H%M')
+    g1.time = dt1
+    g2 = g1.drop('date', axis=1).copy()
+
+    if stacked:
+        mtypes.append('qual_code')
+        g3 = g2.melt(id_vars=['site', 'time'], value_vars=mtypes, var_name='mtype')
+    else:
+        g3 = g2
+    return g3.set_index(['site', 'time'])
+
+
+
+
+
+
+
+
+
+
+
+
+
