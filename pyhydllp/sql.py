@@ -159,7 +159,7 @@ def gaugings(server, database, sites, mtypes=['wl', 'flow'], from_date=None, to_
         wl, flow, temp, width, area, velocity, maxdepth, and wettedper
     """
     ### Extract the mtype codes
-    mtype_dict = {'wl': 'M_GH', 'flow': 'FLOW', 'area': 'AREA', 'velocity': 'VELOCITY', 'maxdepth': 'MAXDEPTH', 'wettedper': 'WETTEDPER', 'temp': 'TEMP', 'width': 'WIDTH'}
+    mtype_dict = {'wl': 'M_GH', 'flow': 'FLOW', 'area': 'AREA', 'velocity': 'VELOCITY', 'maxdepth': 'MAXDEPTH', 'wettedper': 'WETTEDPER', 'temp': 'TEMP', 'width': 'WIDTH', 'deviation': 'DEVIATION'}
 
     mtypes_code = [mtype_dict[i] for i in mtypes if i in mtype_dict]
 
