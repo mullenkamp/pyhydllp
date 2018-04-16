@@ -126,7 +126,7 @@ def sql_sites_var(server, database, varto=None, data_source='A'):
     return period3
 
 
-def gaugings(server, database, sites, mtypes=['wl', 'flow'], from_date=None, to_date=None, stacked=False):
+def gaugings(server, database, sites, mtypes=['wl', 'flow'], from_date=None, to_date=None, stacked=False, mod_date=False):
     """
     Function to extract gaugings data from Hydstra SQL.
 
@@ -136,16 +136,18 @@ def gaugings(server, database, sites, mtypes=['wl', 'flow'], from_date=None, to_
         The SQL server name.
     database : str
         The database name.
-    sites: list
+    sites : list
         List of sites to be extracted.
-    mtypes: list
+    mtypes : list
         List of generic measurement types to be extracted (see note).
-    from_date: str or None
+    from_date : str or None
         The start date that should be extracted.
-    to_date: str or None
+    to_date : str or None
         The end date that should be extracted.
-    stacked: bool
+    stacked : bool
         Should the mtypes and data be stacked or not.
+    mod_date : bool
+        Should the modification dates be returned?
 
     Returns
     -------
@@ -154,10 +156,10 @@ def gaugings(server, database, sites, mtypes=['wl', 'flow'], from_date=None, to_
     Notes
     -----
     The supported mtypes are:
-        wl, flow
+        wl, flow, temp, width, area, velocity, maxdepth, and wettedper
     """
     ### Extract the mtype codes
-    mtype_dict = {'wl': 'M_GH', 'flow': 'FLOW'}
+    mtype_dict = {'wl': 'M_GH', 'flow': 'FLOW', 'area': 'AREA', 'velocity': 'VELOCITY', 'maxdepth': 'MAXDEPTH', 'wettedper': 'WETTEDPER', 'temp': 'TEMP', 'width': 'WIDTH'}
 
     mtypes_code = [mtype_dict[i] for i in mtypes if i in mtype_dict]
 
@@ -168,6 +170,10 @@ def gaugings(server, database, sites, mtypes=['wl', 'flow'], from_date=None, to_
     rename_cols = ['site', 'date', 'time']
     rename_cols.extend(mtypes)
     rename_cols.extend(['qual_code'])
+    if mod_date:
+        cols.append('DATEMOD')
+        rename_cols.append('mod_date')
+        mtypes.append('mod_date')
     g1 = pdsql.mssql.rd_sql(server, database, 'GAUGINGS', cols, {'STN': sites}, from_date=from_date, to_date=to_date, date_col='MEAS_DATE', rename_cols=rename_cols)
     g1.site = g1.site.str.strip()
     dt1 = pd.to_datetime(g1.date.astype(str) + ' ' + g1.time.astype(int).astype(str), format='%Y-%m-%d %H%M')
@@ -176,10 +182,10 @@ def gaugings(server, database, sites, mtypes=['wl', 'flow'], from_date=None, to_
 
     if stacked:
         mtypes.append('qual_code')
-        g3 = g2.melt(id_vars=['site', 'time'], value_vars=mtypes, var_name='mtype')
+        g3 = g2.melt(id_vars=['site', 'time'], value_vars=mtypes, var_name='mtype').set_index(['site', 'time', 'mtype'])
     else:
-        g3 = g2
-    return g3.set_index(['site', 'time'])
+        g3 = g2.set_index(['site', 'time'])
+    return g3
 
 
 
