@@ -126,7 +126,7 @@ def sql_sites_var(server, database, varto=None, data_source='A'):
     return period3
 
 
-def gaugings(server, database, sites, mtypes=['wl', 'flow'], from_date=None, to_date=None, stacked=False, mod_date=False):
+def gaugings(server, database, sites=None, mtypes=['wl', 'flow'], from_date=None, to_date=None, from_mod_date=None, to_mod_date=None, stacked=False):
     """
     Function to extract gaugings data from Hydstra SQL.
 
@@ -144,10 +144,12 @@ def gaugings(server, database, sites, mtypes=['wl', 'flow'], from_date=None, to_
         The start date that should be extracted.
     to_date : str or None
         The end date that should be extracted.
+    from_mod_date : str or None
+        The start modification date that should be extracted. If not None, has priority over from_date.
+    to_mod_date : str or None
+        The end modification date that should be extracted. If not None, has priority over to_date.
     stacked : bool
         Should the mtypes and data be stacked or not.
-    mod_date : bool
-        Should the modification dates be returned?
 
     Returns
     -------
@@ -170,15 +172,24 @@ def gaugings(server, database, sites, mtypes=['wl', 'flow'], from_date=None, to_
     rename_cols = ['site', 'date', 'time']
     rename_cols.extend(mtypes)
     rename_cols.extend(['qual_code'])
-    if mod_date:
-        cols.append('DATEMOD')
-        rename_cols.append('mod_date')
-        mtypes.append('mod_date')
-    g1 = pdsql.mssql.rd_sql(server, database, 'GAUGINGS', cols, {'STN': sites}, from_date=from_date, to_date=to_date, date_col='MEAS_DATE', rename_cols=rename_cols)
+    cols.append('DATEMOD')
+    rename_cols.append('mod_date')
+    mtypes.append('mod_date')
+
+    if isinstance(sites, list):
+        where_col = {'STN': sites}
+    else:
+        where_col = None
+
+    if isinstance(from_mod_date, str) | isinstance(to_mod_date, str):
+        g1 = pdsql.mssql.rd_sql(server, database, 'GAUGINGS', cols, where_col, from_date=from_date, to_date=to_date, date_col='DATEMOD', rename_cols=rename_cols)
+    else:
+        g1 = pdsql.mssql.rd_sql(server, database, 'GAUGINGS', cols, where_col, from_date=from_date, to_date=to_date, date_col='MEAS_DATE', rename_cols=rename_cols)
     g1.site = g1.site.str.strip()
+    g1.loc[~(g1.time >= 100), 'time'] = 1200
     dt1 = pd.to_datetime(g1.date.astype(str) + ' ' + g1.time.astype(int).astype(str), format='%Y-%m-%d %H%M')
     g1.time = dt1
-    g2 = g1.drop('date', axis=1).copy()
+    g2 = g1.drop('date', axis=1)
 
     if stacked:
         mtypes.append('qual_code')
