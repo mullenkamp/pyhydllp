@@ -182,7 +182,7 @@ def gaugings(server, database, sites=None, mtypes=['wl', 'flow'], from_date=None
         where_col = None
 
     if isinstance(from_mod_date, str) | isinstance(to_mod_date, str):
-        g1 = pdsql.mssql.rd_sql(server, database, 'GAUGINGS', cols, where_col, from_date=from_date, to_date=to_date, date_col='DATEMOD', rename_cols=rename_cols)
+        g1 = pdsql.mssql.rd_sql(server, database, 'GAUGINGS', cols, where_col, from_date=from_mod_date, to_date=to_mod_date, date_col='DATEMOD', rename_cols=rename_cols)
     else:
         g1 = pdsql.mssql.rd_sql(server, database, 'GAUGINGS', cols, where_col, from_date=from_date, to_date=to_date, date_col='MEAS_DATE', rename_cols=rename_cols)
     g1.site = g1.site.str.strip()
