@@ -9,7 +9,7 @@ import pdsql
 from pyhydllp import sql, hydllp
 
 
-def get_ts_data_bulk(self, server, database, varto, sites=None, data_source='A', from_date=None, to_date=None, from_mod_date=None, to_mod_date=None, interval='day', qual_codes=[30, 20, 10, 11, 21, 18], concat_data=False, export=None, code_convert=None, qual_code_convert=None):
+def get_ts_data_bulk(self, server, database, varto, sites=None, data_source='A', from_date=None, to_date=None, from_mod_date=None, to_mod_date=None, interval='day', qual_codes=[30, 20, 10, 11, 21, 18], concat_data=False, cols_convert=None, code_convert=None, qual_code_convert=None, export=None):
     """
     Function to read in data from Hydstra's database using HYDLLP. This function extracts all sites with a specific variable code (varto).
 
@@ -37,14 +37,16 @@ def get_ts_data_bulk(self, server, database, varto, sites=None, data_source='A',
         The frequency of the output data (year, month, day, hour, minute, second, period). If data_type is 'point', then interval cannot be 'period' (use anything else, it doesn't matter).
     qual_codes : list of int
         The hydstra quality codes for output.
-    consat_data : bool
+    concat_data : bool
         Shoud the data be concat and returned?
-    export: str
-        Path string where the data should be saved, or None to not save the data.
+    cols_convert : dict
+        A dict of original column names to new names. Original names are (in this order) site, time, data, qual_code, hydstra_code.
     code_convert : dict
         A dict to convert the hydstra mtype codes to other codes.
     qual_code_convert : dict
         A dict to convert the hydstra quality codes to another set of codes.
+    export: str
+        Path string where the data should be saved, or None to not save the data.
 
     Return
     ------
@@ -114,49 +116,41 @@ def get_ts_data_bulk(self, server, database, varto, sites=None, data_source='A',
             df = h.get_ts_traces(site_list=[tup.site], data_type=data_type, start=tup.from_date, end=tup.to_date, varfrom=tup.varfrom, varto=varto, interval=interval, qual_codes=qual_codes)
             if df.empty:
                 continue
-            df['HydstraCode'] = varto
+            df['hydstra_code'] = varto
             site1 = str(tup.site).replace('_', '/')
 
             ## Convert code 143 to code 140
             if varto == 143:
                 df.loc[:, 'data'] = df.loc[:, 'data'] * 0.001
-                df['HydstraCode'] = 140
+                df['hydstra_code'] = 140
 
             ## Convert GW well sites to their proper name
             if varto in [110]:
                 df.index = df.index.set_levels([site1], 'site')
 
-            ### Make sure the data types are correct
-            df.rename(columns={'data': 'Value', 'qual_code': 'QualityCode'}, inplace=True)
-            df.index.rename(['Site', 'Time'], inplace=True)
-            df.loc[:, 'QualityCode'] = df['QualityCode'].astype('int32')
-            df.loc[:, 'HydstraCode'] = df['HydstraCode'].astype('int32')
-    #        df.loc[:, 'ModDate'] = today1
-            code_name = 'HydstraCode'
+            ## Reset index
+            df = df.reset_index()
 
-            ## Convert Hydstra mtype codes to other codes if desired
+            ## Convert Hydstra mtype codes
             if isinstance(code_convert, dict):
-                df.replace({'HydstraCode': code_convert}, inplace=True)
-                df.rename(columns={'HydstraCode': 'FeatureMtypeSourceID'}, inplace=True)
-                code_name = 'FeatureMtypeSourceID'
+                df.replace({'hydstra_code': code_convert}, inplace=True)
 
-            ## Convert Hydstra quality codes to NEMS codes
+            ## Convert Hydstra quality code
             if isinstance(qual_code_convert, dict):
-                df.replace({'QualityCode': qual_code_convert}, inplace=True)
+                df.replace({'qual_code': qual_code_convert}, inplace=True)
+
+            ## Convert column names
+            if isinstance(cols_convert, dict):
+                df.rename(columns=cols_convert, inplace=True)
 
             ### Export options
             if isinstance(export, dict):
-                df = df.reset_index()
-                from_date1 = str(df.Time.min())
-                to_date1 = str(df.Time.max())
-                del_rows_dict = {'where_col': {'Site': [site1], code_name: [str(df[code_name][0])]}, 'from_date':from_date1, 'to_date': to_date1, 'date_col': 'Time'}
-                del_rows_dict.update(export)
-                pdsql.mssql.del_mssql_table_rows(**del_rows_dict)
-                pdsql.mssql.to_mssql(df, **export)
+                col_names = df.columns
+                pdsql.mssql.update_mssql_table_rows(df, on=[col_names[0], col_names[1], col_names[4]], **export)
             elif isinstance(export, str):
                 if export.endswith('.h5'):
                     try:
-                        store.append(key='var_' + str(varto), value=df, min_itemsize={'site': site_str_len})
+                        store.append(key='var_' + str(varto), value=df, min_itemsize={col_names[0]: site_str_len})
                     except Exception as err:
                         store.close()
                         raise err
