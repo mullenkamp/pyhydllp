@@ -54,7 +54,7 @@ def rating_changes(server, database, sites=None, from_mod_date=None, to_mod_date
 
     rate_per = pdsql.mssql.rd_sql(server, database, table_per, fields_per, where_per, rename_cols=names_per, where_op='OR')
     rate_per['site'] = rate_per['site'].str.strip()
-    time1 = pd.to_timedelta(rate_per['stime'] // 100, unit='H') + pd.to_timedelta(rate_per['stime'] % 100, unit='m')
+    time1 = pd.to_timedelta(rate_per['stime'].astype(int) // 100, unit='H') + pd.to_timedelta(rate_per['stime'].astype(int) % 100, unit='m')
     rate_per['sdate'] = rate_per['sdate'] + time1
     rate_per = rate_per.sort_values(['site', 'sdate']).reset_index(drop=True).drop('stime', axis=1)
 
