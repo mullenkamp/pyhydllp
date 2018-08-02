@@ -1,6 +1,6 @@
 {% set name = "pyhydllp" %}
-{% set version = "1.0.6" %}
-{% set sha256 = "b545c44bee237aacd8aff96d57613f0c583152d970568791b3a7e173f35f1d4c" %}
+{% set version = "1.0.7" %}
+{% set sha256 = "b2ec2bed11e4e0971a44df44451a36ba893a1c4fc36126f9b09f6ab3add34ba5" %}
 
 # sha256 is the prefered checksum -- you can get it for a file with:
 #  `openssl sha256 <file name>`.
