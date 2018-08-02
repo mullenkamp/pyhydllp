@@ -90,10 +90,10 @@ class Hydllp(object):
 
         # string c_type to store the error message
         error_str = ""
-        c_error_str = ctypes.c_char_p(error_str)
+        c_error_str = ctypes.c_char_p(error_str.encode('ascii'))
 
         # Allocate memory for the return string
-        return_str = ctypes.create_string_buffer(" ", 1400)
+        return_str = ctypes.create_string_buffer(b' ', 1400)
 
         # Call "DecodeError"
         err = decode_error_lib(ctypes.c_int(error_code),
@@ -159,18 +159,18 @@ class Hydllp(object):
         jsonCall_lib.restype = ctypes.c_int
 
         # Allocate memory for the return string
-        return_str = ctypes.create_string_buffer(" ".encode('ascii'), return_str_len)
+        return_str = ctypes.create_string_buffer(b' ', return_str_len)
 
         # c_return_str = ctypes.c_char_p(return_str)
 
         # Call the dll function "JsonCall"
         err = jsonCall_lib(self._handle,
-                           ctypes.c_char_p(request_str),
+                           ctypes.c_char_p(request_str.encode('ascii')),
                            return_str,
                            return_str_len)
 
         result = return_str.value
-        return (result)
+        return result
 
         # ********************************************************************************
 
@@ -202,7 +202,11 @@ class Hydllp(object):
 
         # Values other than 0 means that an error occured
         if error_code != 0:
-            error_msg = self._decode_error(error_code)
+#            error_msg = self._decode_error(error_code)
+            if error_code == 10:
+                error_msg = '	StartUp failed. Possible reasons include: SDE7.DLL or SDECDX7.DLL not found, HYCONFIG.INI or HYACCESS.INI not found or incorrect.'
+            elif error_code == 12:
+                error_msg = '	Login failed. Make sure the user ID and password are correct.'
             raise HydstraError(error_msg)
 
         self._logged_in = True
@@ -229,7 +233,7 @@ class Hydllp(object):
         buffer_len = 1400
 
         # convert request dict to a json string
-        request_json = json.dumps(request_dict).encode('ascii')
+        request_json = json.dumps(request_dict)
 
         # call json_call and convert result to python dictionary
         result_json = self._json_call(request_json, buffer_len)
