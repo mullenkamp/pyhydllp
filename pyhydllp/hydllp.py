@@ -230,7 +230,7 @@ class Hydllp(object):
 
         # initial buffer length
         # If it is too small, we can resize, see below
-        buffer_len = 1400
+        buffer_len = 3000
 
         # convert request dict to a json string
         request_json = json.dumps(request_dict)
@@ -243,6 +243,7 @@ class Hydllp(object):
         # with the actual buffer length given by the error response
         if result_dict["error_num"] == 200:
             buffer_len = result_dict["buff_required"]
+            print('More buffer was required: ' + str(buffer_len))
             result_json = self._json_call(request_json, buffer_len)
             result_dict = json.loads(result_json)
 
