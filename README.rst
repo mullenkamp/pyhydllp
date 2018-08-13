@@ -46,10 +46,15 @@ The following example won't work outside of ECan:
 .. code-block:: python
 
   sites = [70105, 69607]
-  varto = 100
+  varfrom = 100 # the 100 code is water level
+  varto = 140 # the 140 code is flow
   from_mod_date = '2018-01-01'
   to_mod_date = '2018-03-26'
 
   ch1 = hyd1.ts_data_changes(varto=[varto], sites=sites, from_mod_date=from_mod_date,
                              to_mod_date=to_mod_date)
   print(ch1)
+
+  tsdata = hyd1.get_ts_data(sites=sites, start=from_mod_date, end=to_mod_date, varfrom=varfrom, varto=varto)
+
+  print(tsdata)
