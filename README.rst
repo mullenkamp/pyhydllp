@@ -51,7 +51,7 @@ The following example won't work outside of ECan:
   from_mod_date = '2018-01-01'
   to_mod_date = '2018-03-26'
 
-  ch1 = hyd1.ts_data_changes(varto=[varto], sites=sites, from_mod_date=from_mod_date,
+  ch1 = hyd1.ts_data_changes(varto=[varfrom], sites=sites, from_mod_date=from_mod_date,
                              to_mod_date=to_mod_date)
   print(ch1)
 
