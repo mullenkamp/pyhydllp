@@ -16,7 +16,7 @@ def get_ts_blockinfo(self, sites, datasources=['A'], variables=['100', '10', '11
 
     Parameters
     ----------
-    sites : list, array, one column csv file, or dataframe
+    sites : list
         Site numbers.
     datasource : list of str
         Hydstra datasource code (usually ['A']).
@@ -166,6 +166,3 @@ def get_ts_data(self, sites, start=0, end=0, datasource='A', data_type='mean', v
         util.save_df(data, export_path)
 
     return data
-
-
-
