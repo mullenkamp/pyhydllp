@@ -62,6 +62,8 @@ The following example won't work outside of ECan:
                              to_mod_date=to_mod_date)
   print(ch1)
 
-  tsdata = hyd1.get_ts_data(sites=sites, start=from_mod_date, end=to_mod_date, varfrom=varfrom, varto=varto, datasource=datasource, qual_codes=qual_codes)
+  tsdata = hyd1.get_ts_data(sites=sites, start=from_mod_date, end=to_mod_date,
+                            varfrom=varfrom, varto=varto, datasource=datasource,
+                            qual_codes=qual_codes)
 
   print(tsdata)
