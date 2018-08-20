@@ -21,7 +21,7 @@ hyconfig_filename = 'HYCONFIG.INI'
 sites = [70105, 69607]
 varto = 100
 from_mod_date = '2018-01-01'
-to_mod_date = '2018-03-26'
+to_mod_date = '2018-07-26'
 
 ################################################
 ### Tests

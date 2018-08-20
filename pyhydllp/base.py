@@ -112,7 +112,7 @@ def get_variable_list(self, sites, data_source='A'):
     return df
 
 
-def get_ts_data(self, sites, start=0, end=0, datasource='A', data_type='mean', varfrom=100, varto=140, interval='day', multiplier=1, qual_codes=[30, 20, 10, 11, 21, 18], report_time=None, sites_chunk=20, print_sites=False, export_path=None):
+def get_ts_data(self, sites, start=0, end=0, datasource='A', data_type='mean', varfrom=100, varto=140, qual_codes=None, interval='day', multiplier=1, report_time=None, sites_chunk=20, print_sites=False, export_path=None):
     """
     Wrapper function over hydllp to read in data from Hydstra's database. Must be run in a 32bit python. If either start_time or end_time is not 0, then they both need a date.
 
@@ -136,10 +136,14 @@ def get_ts_data(self, sites, start=0, end=0, datasource='A', data_type='mean', v
         The frequency of the output data (year, month, day, hour, minute, second, period). If data_type is 'point', then interval cannot be 'period' (use anything else, it doesn't matter).
     multiplier : int
         interval frequency.
-    qual_codes : list of int
+    qual_codes : list of int or None
         The quality codes in Hydstra for filtering the data.
     sites_chunk : int
-        Number of sites to request to hydllp at one time. Do not change unless you understand what it does.
+        Number of sites to request to hydllp at one time. Processing too many sites at a time may exceed the RAM.
+    report_time : start or end
+        Specifying the report_time as “end” will cause the time output with aggregated values for mean, total, and partial total data types to be the end of the period instead of the start.
+    print_sites : bool
+        print site names as they are extracted.
 
     Return
     ------

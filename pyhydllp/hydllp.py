@@ -386,9 +386,39 @@ class Hydllp(object):
 
             return df2
 
-    def get_ts_traces(self, site_list, start=0, end=0, varfrom=100, varto=140, interval='day', multiplier=1, datasource='A', data_type='mean', qual_codes=[30, 20, 10, 11, 21, 18], report_time=None):
+    def get_ts_traces(self, site_list, start=0, end=0, varfrom=100, varto=140, interval='day', multiplier=1, datasource='A', data_type='mean', qual_codes=None, report_time='start'):
         """
+        Wrapper function over hydllp to read in data from Hydstra's database. Must be run in a 32bit python. If either start_time or end_time is not 0, then they both need a date.
 
+        Parameters
+        ----------
+        site_list : list, array, one column csv file, or dataframe
+            Site numbers.
+        start : str or int of 0
+            The start time in the format of either '2001-01-01' or 0 (for all data).
+        end : str or int of 0
+            Same formatting as start.
+        datasource : str
+            Hydstra datasource code (usually 'A').
+        data_type : str
+            mean, maxmin, max, min, start, end, first, last, tot, point, partialtot, or cum.
+        varfrom : int or float
+            The hydstra source data variable (100.00 is water level).
+        varto : int or float
+            The hydstra conversion data variable (140.00 is flow).
+        interval : str
+            The frequency of the output data (year, month, day, hour, minute, second, period). If data_type is 'point', then interval cannot be 'period' (use anything else, it doesn't matter).
+        multiplier : int
+            interval frequency.
+        qual_codes : list of int
+            The quality codes in Hydstra for filtering the data.
+        report_time : start or end
+            Specifying the report_time as “end” will cause the time output with aggregated values for mean, total, and partial total data types to be the end of the period instead of the start.
+
+        Return
+        ------
+        DataFrame
+            In long format with site and time as a MultiIndex.
         """
 
         # Convert the site list to a comma delimited string of sites
@@ -442,10 +472,10 @@ class Hydllp(object):
                 df1['time'] = pd.to_datetime(df1['time'], format='%Y%m%d%H%M%S')
                 df1['qual_code'] = pd.to_numeric(df1['qual_code'], errors='coerce', downcast='integer')
                 df1['site'] = sites[i]
-                df2 = df1[df1.qual_code.isin(qual_codes)]
-                out1 = pd.concat([out1, df2])
+                if isinstance(qual_codes, list):
+                    df1 = df1[df1.qual_code.isin(qual_codes)]
+                out1 = pd.concat([out1, df1])
 
         out2 = out1.set_index(['site', 'time'])[['data', 'qual_code']]
 
         return out2
-

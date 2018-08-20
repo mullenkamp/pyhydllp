@@ -1,6 +1,7 @@
 pyhydllp
 ==========
-pyhydllp is a package that contains many Python functions for extracting data from Hydstra.
+pyhydllp is a wrapper package that contains many Python functions for extracting data from Hydstra using the hydllp API.
+Detailed documentation about hydllp and relevant parameters can be found here: `<http://kisters.com.au/doco/hydllp.htm>`_
 
 Installation
 -------------
@@ -46,8 +47,10 @@ The following example won't work outside of ECan:
 .. code-block:: python
 
   sites = [70105, 69607]
+  datasource = 'A'
   varfrom = 100 # the 100 code is water level
   varto = 140 # the 140 code is flow
+  qual_codes = [30, 20, 10 ,11, 21, 18] # It's best to specify as hydllp can return bad values for a qual_code 255
   from_mod_date = '2018-01-01'
   to_mod_date = '2018-03-26'
 
@@ -59,6 +62,6 @@ The following example won't work outside of ECan:
                              to_mod_date=to_mod_date)
   print(ch1)
 
-  tsdata = hyd1.get_ts_data(sites=sites, start=from_mod_date, end=to_mod_date, varfrom=varfrom, varto=varto)
+  tsdata = hyd1.get_ts_data(sites=sites, start=from_mod_date, end=to_mod_date, varfrom=varfrom, varto=varto, datasource=datasource, qual_codes=qual_codes)
 
   print(tsdata)
