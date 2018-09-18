@@ -9,7 +9,7 @@ The GitHub repository is found `here <https://github.com/mullenkamp/pyhydllp>`_
 
 .. toctree::
    :maxdepth: 2
-   :caption: Modules
+   :caption: Sections
 
    installation
    usage
