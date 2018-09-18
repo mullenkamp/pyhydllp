@@ -19,6 +19,7 @@
 #
 import os
 import sys
+import pyhydllp
 
 project_name = 'pyhydllp'
 
@@ -47,21 +48,39 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.doctest',
     'sphinx.ext.intersphinx',
-    'sphinx.ext.todo',
-    'sphinx.ext.coverage',
-    #'sphinx.ext.mathjax',
-    'sphinx.ext.ifconfig',
-    'sphinx.ext.viewcode',
-    'sphinx.ext.githubpages',
+    # 'sphinx.ext.coverage',
+    # 'sphinx.ext.mathjax',
+    # 'sphinx.ext.ifconfig',
+    # 'sphinx.ext.viewcode',
+    # 'sphinx.ext.githubpages',
+    'sphinx.ext.autosummary',
+    'sphinx.ext.napoleon',
+    # 'sphinx_gallery.gen_gallery',
 	#'rst2pdf.pdfbuilder',
+    'numpydoc',
 
     # IPython console
-    # 'IPython.sphinxext.ipython_console_highlighting',
-    # 'IPython.sphinxext.ipython_directive',
+    'IPython.sphinxext.ipython_console_highlighting',
+    'IPython.sphinxext.ipython_directive'
 
     # Enable Google Analytics ( requires: https://pypi.python.org/pypi/sphinxcontrib-googleanalytics )
     #'sphinxcontrib.googleanalytics',
 ]
+
+autosummary_generate = True
+
+# Sphinx gallery configuration
+# sphinx_gallery_conf = {
+#     'examples_dirs': ['../../examples'],
+#     'filename_pattern': '^((?!sgskip).)*$',
+#     'gallery_dirs': ['gallery'],
+#     'doc_module': ('pdsql',),
+#     'reference_url': {'matplotlib': 'http://matplotlib.org',
+#                       'numpy': 'http://docs.scipy.org/doc/numpy/reference',
+#                       'scipy': 'http://docs.scipy.org/doc/scipy/reference',
+#                       'geopandas': None},
+#     'backreferences_dir': 'reference'
+# }
 
 # index - master document
 # rst2pdf - name of the generated pdf
@@ -72,6 +91,9 @@ extensions = [
 # Google Analytics ID to enable tracking of site traffic
 #googleanalytics_id = "UA-103385820-1"
 #googleanalytics_enabled = True
+
+# Fix issue with warnings from numpydoc (see discussion in PR #534)
+numpydoc_show_class_members = False
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -153,7 +175,7 @@ pygments_style = 'sphinx'
 # keep_warnings = False
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
-todo_include_todos = True
+# todo_include_todos = True
 
 
 # -- Options for HTML output ----------------------------------------------
@@ -176,15 +198,15 @@ html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 extrafooter = ""
 
-html_context = {
-    # Enable the "Edit in GitHub link within the header of each page.
-    'display_github': True,
-    # Set the following variables to generate the resulting github URL for each page.
-    # Format Template: https://{{ github_host|default("github.com") }}/{{ github_user }}/{{ github_repo }}/blob/{{ github_version }}{{ conf_py_path }}{{ pagename }}{{ suffix }}
-    'github_user': 'mullenkamp',
-    'github_repo': 'master',
-    'github_version': 'master/source/'
-}
+# html_context = {
+#     # Enable the "Edit in GitHub link within the header of each page.
+#     'display_github': True,
+#     # Set the following variables to generate the resulting github URL for each page.
+#     'Format Template': 'https://{{ github_host|default("github.com") }}/{{ github_user }}/{{ github_repo }}/blob/{{ github_version }}{{ conf_py_path }}{{ pagename }}{{ suffix }}',
+#     'github_user': 'mullenkamp',
+#     'github_repo': 'master',
+#     'github_version': 'master/source/'
+# }
 
 # Add any paths that contain custom themes here, relative to this directory.
 # html_theme_path = []
