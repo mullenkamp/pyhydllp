@@ -32,7 +32,8 @@ The following example won't work outside of ECan:
   datasource = 'A'
   varfrom = 100 # the 100 code is water level
   varto = 140 # the 140 code is flow
-  qual_codes = [30, 20, 10 ,11, 21, 18] # It's best to specify as hydllp can return bad values for a qual_code 255
+  qual_codes = [30, 20, 10 ,11, 21, 18] # It's best to specify as hydllp can 
+                                        # return bad values for a qual_code 255
   from_mod_date = '2018-01-01'
   to_mod_date = '2018-03-26'
 
