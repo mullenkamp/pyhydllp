@@ -2,13 +2,37 @@
 from setuptools import setup, find_packages
 # To use a consistent encoding
 from codecs import open
-from os import path
+import os
 
-here = path.abspath(path.dirname(__file__))
+here = os.path.abspath(os.path.dirname(__file__))
+
+# General parameters
+name = 'pyhydllp'
+main_package = 'pyhydllp'
+# datasets = 'datasets'
+version = '1.0.11'
+
+# The below code is for readthedocs. To have sphinx/readthedocs interact with
+# the contained package, readthedocs needs to build the package. But the dependencies
+# should be installed via the conda yml env file rather than during the package build.
+if os.environ.get('READTHEDOCS', False) == 'True':
+    INSTALL_REQUIRES = []
+else:
+    INSTALL_REQUIRES = ['pandas']
 
 # Get the long description from the README file
-with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
+with open(os.path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
+
+# get all data dirs in the datasets module
+# data_files = []
+#
+# for item in os.listdir(os.path.join(main_package, datasets)):
+#     if not item.startswith('__'):
+#         if os.path.isdir(os.path.join(main_package, datasets, item)):
+#             data_files.append(os.path.join(datasets, item, '*'))
+#         elif item.endswith('.zip'):
+#             data_files.append(os.path.join(datasets, item))
 
 # Arguments marked as "Required" below must be included for upload to PyPI.
 # Fields marked as "Optional" may be commented out.
@@ -25,7 +49,7 @@ setup(
     # There are some restrictions on what makes a valid project name
     # specification here:
     # https://packaging.python.org/specifications/core-metadata/#name
-    name='pyhydllp',  # Required
+    name=name,  # Required
 
     # Versions should comply with PEP 440:
     # https://www.python.org/dev/peps/pep-0440/
@@ -33,12 +57,12 @@ setup(
     # For a discussion on single-sourcing the version across setup.py and the
     # project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='1.0.10',  # Required
+    version=version,  # Required
 
     # This is a one-line description or tagline of what your project does. This
     # corresponds to the "Summary" metadata field:
     # https://packaging.python.org/specifications/core-metadata/#summary
-    description='Functions to extract data from Hydstra',  # Required
+    description='Class and functions to access Hydstra data and tools',  # Required
 
     # This is an optional longer description of your project that represents
     # the body of text which users will see when they visit PyPI.
@@ -54,7 +78,7 @@ setup(
     #
     # This field corresponds to the "Home-Page" metadata field:
     # https://packaging.python.org/specifications/core-metadata/#home-page-optional
-    url='https://github.com/mullenkamp/pyhydllp',  # Optional
+    url='https://github.com/mullenkamp/' + name,  # Optional
 
     # This should be your name or the name of the organization which owns the
     # project.
@@ -107,8 +131,7 @@ setup(
     #
     #   py_modules=["my_module"],
     #
-    # packages=find_packages(exclude=['contrib', 'docs', 'tests']),  # Required
-    packages=['pyhydllp'],
+    packages=find_packages(exclude=['contrib', 'docs', 'tests', '__pycashe__']),  # Required
 
     # This field lists other packages that your project depends on to run.
     # Any package you put here will be installed by pip when your project is
@@ -116,7 +139,7 @@ setup(
     #
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
-    install_requires=['pandas'],  # Optional
+    install_requires=INSTALL_REQUIRES,  # Optional
 
     # List additional groups of dependencies here (e.g. development
     # dependencies). Users will be able to install these using the "extras"
@@ -137,7 +160,7 @@ setup(
     # If using Python 2.6 or earlier, then these have to be included in
     # MANIFEST.in as well.
     # package_data={  # Optional
-    #     'sample': ['package_data.dat'],
+    #     main_package: [datasets + '/*.csv'],
     # },
 
     # Although 'package_data' is the preferred approach, in some case you may
@@ -159,4 +182,5 @@ setup(
     #        'sample=sample.command_line:t3',
     #    ],
     # },
+    license='Apache',
 )
