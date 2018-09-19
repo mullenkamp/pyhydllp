@@ -18,7 +18,7 @@ version = '1.0.11'
 if os.environ.get('READTHEDOCS', False) == 'True':
     INSTALL_REQUIRES = []
 else:
-    INSTALL_REQUIRES = ['pandas']
+    INSTALL_REQUIRES = ['pandas', 'pdsql']
 
 # Get the long description from the README file
 with open(os.path.join(here, 'README.rst'), encoding='utf-8') as f:
