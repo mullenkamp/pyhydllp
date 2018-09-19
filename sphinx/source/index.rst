@@ -15,6 +15,3 @@ The GitHub repository is found `here <https://github.com/mullenkamp/pyhydllp>`_
    usage
    package_references
    license-terms
-
-
-.. [1] Allen, R. G., Pereira, L. S., Raes, D., & Smith, M. (1998). Crop evapotranspiration-Guidelines for computing crop water requirements-FAO Irrigation and drainage paper 56. FAO, Rome, 300(9), D05109.
