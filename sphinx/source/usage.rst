@@ -1,7 +1,7 @@
 How to use pyhydllp
 ===================
 
-This section will describe how to use the ETo package. The ETo class and functions depend heavily on the Pandas package. Nearly all outputs are either as Pandas Series or DataFrames.
+This section will describe how to use the pyhydllp package. The Hyd class and functions depend heavily on the Pandas package. Nearly all outputs are either as Pandas Series or DataFrames.
 
 Initialising
 ------------
@@ -32,7 +32,7 @@ The following example won't work outside of ECan:
   datasource = 'A'
   varfrom = 100 # the 100 code is water level
   varto = 140 # the 140 code is flow
-  qual_codes = [30, 20, 10 ,11, 21, 18] # It's best to specify as hydllp can 
+  qual_codes = [30, 20, 10 ,11, 21, 18] # It's best to specify as hydllp can
                                         # return bad values for a qual_code 255
   from_mod_date = '2018-01-01'
   to_mod_date = '2018-03-26'
