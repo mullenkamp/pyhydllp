@@ -12,6 +12,10 @@ from pyhydllp import hyd
 
 ini_path = r'\\fileservices02\ManagedShares\Data\Hydstra\prod\hyd'
 dll_path = r'\\fileservices02\ManagedShares\Data\Hydstra\prod\hyd\sys\run'
+#ini_path = r'\\fs02\TestManagedShares\Data\Hydstra\hyd'
+#dll_path = r'\\fs02\TestManagedShares\Data\Hydstra\hyd\sys\run'
+#ini_path = r'\\fs02\DevManagedShares\Data\Hydstra\hyd'
+#dll_path = r'\\fs02\DevManagedShares\Data\Hydstra\hyd\sys\run'
 username = ''
 password = ''
 hydllp_filename = 'hydllp.dll'
@@ -36,15 +40,15 @@ def test_ts_data_changes():
 
 def test_get_ts_blockinfo():
     b1 = hyd1.get_ts_blockinfo(sites=sites, from_mod_date=from_mod_date, to_mod_date=to_mod_date)
-    assert len(b1) == 30
+    assert len(b1) >= 300
 
 
 def test_get_variable_list():
     v1 = hyd1.get_variable_list(sites=sites)
-    assert len(v1) == 4
+    assert len(v1) >= 4
 
 
 def test_get_ts_data():
     tsdata = hyd1.get_ts_data(sites=sites, varfrom=100, varto=140, start=from_mod_date, end=to_mod_date)
-    assert len(tsdata.columns) == 2
+    assert len(tsdata) >= 400
 
