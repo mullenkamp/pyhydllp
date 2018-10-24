@@ -12,8 +12,8 @@ from pyhydllp import hyd
 
 ini_path = r'\\fileservices02\ManagedShares\Data\Hydstra\prod\hyd'
 dll_path = r'\\fileservices02\ManagedShares\Data\Hydstra\prod\hyd\sys\run'
-#ini_path = r'\\fs02\TestManagedShares\Data\Hydstra\hyd'
-#dll_path = r'\\fs02\TestManagedShares\Data\Hydstra\hyd\sys\run'
+# ini_path = r'\\fs02\TestManagedShares\Data\Hydstra\hyd'
+# dll_path = r'\\fs02\TestManagedShares\Data\Hydstra\hyd\sys\run'
 #ini_path = r'\\fs02\DevManagedShares\Data\Hydstra\hyd'
 #dll_path = r'\\fs02\DevManagedShares\Data\Hydstra\hyd\sys\run'
 username = ''
@@ -52,3 +52,14 @@ def test_get_ts_data():
     tsdata = hyd1.get_ts_data(sites=sites, varfrom=100, varto=140, start=from_mod_date, end=to_mod_date)
     assert len(tsdata) >= 400
 
+
+
+
+ini_path = r'\\fileservices02\ManagedShares\Data\Hydstra\prod\hyd'
+dll_path = r'\\fileservices02\ManagedShares\Data\Hydstra\prod\hyd\sys\run'
+
+hyd1 = hyd(ini_path, dll_path, username='MIKE', password='Pass2018')
+
+chg1 = hyd1.ts_data_changes([100], ['1071110'], from_mod_date='2018-07-01')
+
+print(chg1)
