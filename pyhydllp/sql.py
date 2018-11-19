@@ -174,7 +174,7 @@ def gaugings(server, database, sites=None, mtypes=['wl', 'flow'], from_date=None
     rename_cols.extend(['qual_code'])
     cols.append('DATEMOD')
     rename_cols.append('mod_date')
-    mtypes.append('mod_date')
+#    mtypes.append('mod_date')
 
     if isinstance(sites, list):
         where_col = {'STN': sites}
@@ -186,14 +186,16 @@ def gaugings(server, database, sites=None, mtypes=['wl', 'flow'], from_date=None
     else:
         g1 = pdsql.mssql.rd_sql(server, database, 'GAUGINGS', cols, where_col, from_date=from_date, to_date=to_date, date_col='MEAS_DATE', rename_cols=rename_cols)
     g1.site = g1.site.str.strip()
+    g1 = g1[g1.site.notnull()].copy()
     g1.loc[~(g1.time >= 100), 'time'] = 1200
     dt1 = pd.to_datetime(g1.date.astype(str) + ' ' + g1.time.astype(int).astype(str), format='%Y-%m-%d %H%M')
     g1.time = dt1
     g2 = g1.drop('date', axis=1)
 
     if stacked:
-        mtypes.append('qual_code')
-        g3 = g2.melt(id_vars=['site', 'time'], value_vars=mtypes, var_name='mtype').set_index(['site', 'time', 'mtype'])
+#        mtypes.append('qual_code')
+        g3 = g2.melt(id_vars=['site', 'time'], value_vars=mtypes, var_name='mtype')
+        g3 = pd.merge(g3, g2[['site', 'time', 'qual_code', 'mod_date']], on=['site', 'time']).set_index(['site', 'time', 'mtype'])
     else:
         g3 = g2.set_index(['site', 'time'])
     return g3
