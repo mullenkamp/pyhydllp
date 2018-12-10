@@ -48,24 +48,27 @@ def rating_changes(server, database, sites=None, from_mod_date=None, to_mod_date
             where_col = None
 
     rate_hed = pdsql.mssql.rd_sql(server, database, table_hed, fields_hed, where_col, rename_cols=names_hed, from_date=from_mod_date, to_date=to_mod_date, date_col='RELDATE')
-    rate_hed['site'] = rate_hed['site'].str.strip()
+    if rate_hed.empty:
+        return pd.DataFrame()
+    else:
+        rate_hed['site'] = rate_hed['site'].str.strip()
 
-    where_per = {'STATION': rate_hed['site'].astype(str).unique().tolist()}
+        where_per = {'STATION': rate_hed['site'].astype(str).unique().tolist()}
 
-    rate_per = pdsql.mssql.rd_sql(server, database, table_per, fields_per, where_per, rename_cols=names_per, where_op='OR')
-    rate_per['site'] = rate_per['site'].str.strip()
-    time1 = pd.to_timedelta(rate_per['stime'].astype(int) // 100, unit='H') + pd.to_timedelta(rate_per['stime'].astype(int) % 100, unit='m')
-    rate_per['sdate'] = rate_per['sdate'] + time1
-    rate_per = rate_per.sort_values(['site', 'sdate']).reset_index(drop=True).drop('stime', axis=1)
+        rate_per = pdsql.mssql.rd_sql(server, database, table_per, fields_per, where_per, rename_cols=names_per, where_op='OR')
+        rate_per['site'] = rate_per['site'].str.strip()
+        time1 = pd.to_timedelta(rate_per['stime'].astype(int) // 100, unit='H') + pd.to_timedelta(rate_per['stime'].astype(int) % 100, unit='m')
+        rate_per['sdate'] = rate_per['sdate'] + time1
+        rate_per = rate_per.sort_values(['site', 'sdate']).reset_index(drop=True).drop('stime', axis=1)
 
-    rate_per1 = pd.merge(rate_per, rate_hed[['site', 'reftab']], on=['site', 'reftab'])
-    rate_per2 = rate_per1.groupby('site')['sdate'].min().reset_index()
-    rate_per2.columns = ['site', 'from_date']
+        rate_per1 = pd.merge(rate_per, rate_hed[['site', 'reftab']], on=['site', 'reftab'])
+        rate_per2 = rate_per1.groupby('site')['sdate'].min().reset_index()
+        rate_per2.columns = ['site', 'from_date']
 
-    rate_per2['varfrom'] = 100
-    rate_per2['varto'] = 140
+        rate_per2['varfrom'] = 100
+        rate_per2['varto'] = 140
 
-    return rate_per2[['site', 'varfrom', 'varto', 'from_date']]
+        return rate_per2[['site', 'varfrom', 'varto', 'from_date']]
 
 
 def sql_sites_var(server, database, varto=None, data_source='A'):
