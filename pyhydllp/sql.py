@@ -41,13 +41,13 @@ def rating_changes(server, database, sites=None, from_mod_date=None, to_mod_date
     ### Read data
     if sites is not None:
         if isinstance(sites, list):
-            where_col = {'STATION': sites}
+            where_in = {'STATION': sites}
         else:
-            where_col = None
+            where_in = None
     else:
-            where_col = None
+            where_in = None
 
-    rate_hed = pdsql.mssql.rd_sql(server, database, table_hed, fields_hed, where_col, rename_cols=names_hed, from_date=from_mod_date, to_date=to_mod_date, date_col='RELDATE')
+    rate_hed = pdsql.mssql.rd_sql(server, database, table_hed, fields_hed, where_in, rename_cols=names_hed, from_date=from_mod_date, to_date=to_mod_date, date_col='RELDATE')
     if rate_hed.empty:
         return pd.DataFrame()
     else:
@@ -111,7 +111,7 @@ def sql_sites_var(server, database, varto=None, data_source='A'):
     else:
         raise TypeError('period_where must be None, int, or list')
 
-    period1 = pdsql.mssql.rd_sql(server, database, period_tab, period_cols, where_col=period_where, rename_cols=period_names)
+    period1 = pdsql.mssql.rd_sql(server, database, period_tab, period_cols, where_in=period_where, rename_cols=period_names)
     period1.loc[:, 'site'] = period1.site.str.strip()
 
     ### Determine the variables to extract
@@ -180,14 +180,14 @@ def gaugings(server, database, sites=None, mtypes=['wl', 'flow'], from_date=None
 #    mtypes.append('mod_date')
 
     if isinstance(sites, list):
-        where_col = {'STN': sites}
+        where_in = {'STN': sites}
     else:
-        where_col = None
+        where_in = None
 
     if isinstance(from_mod_date, str) | isinstance(to_mod_date, str):
-        g1 = pdsql.mssql.rd_sql(server, database, 'GAUGINGS', cols, where_col, from_date=from_mod_date, to_date=to_mod_date, date_col='DATEMOD', rename_cols=rename_cols)
+        g1 = pdsql.mssql.rd_sql(server, database, 'GAUGINGS', cols, where_in, from_date=from_mod_date, to_date=to_mod_date, date_col='DATEMOD', rename_cols=rename_cols)
     else:
-        g1 = pdsql.mssql.rd_sql(server, database, 'GAUGINGS', cols, where_col, from_date=from_date, to_date=to_date, date_col='MEAS_DATE', rename_cols=rename_cols)
+        g1 = pdsql.mssql.rd_sql(server, database, 'GAUGINGS', cols, where_in, from_date=from_date, to_date=to_date, date_col='MEAS_DATE', rename_cols=rename_cols)
     g1.site = g1.site.str.strip()
     g1 = g1[g1.site.notnull()].copy()
     g1.loc[~(g1.time >= 100), 'time'] = 1200
@@ -202,16 +202,3 @@ def gaugings(server, database, sites=None, mtypes=['wl', 'flow'], from_date=None
     else:
         g3 = g2.set_index(['site', 'time'])
     return g3
-
-
-
-
-
-
-
-
-
-
-
-
-
