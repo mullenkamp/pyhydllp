@@ -103,11 +103,11 @@ def sql_sites_var(server, database, varto=None, data_source='A'):
     ### Import
 
     if varto is None:
-        period_where = {'DATASOURCE': data_source}
+        period_where = {'DATASOURCE': [data_source]}
     elif isinstance(varto, int):
-        period_where = {'DATASOURCE': data_source, 'VARIABLE': [varto]}
+        period_where = {'DATASOURCE': [data_source], 'VARIABLE': [varto]}
     elif isinstance(varto, list):
-        period_where = {'DATASOURCE': data_source, 'VARIABLE': varto}
+        period_where = {'DATASOURCE': [data_source], 'VARIABLE': varto}
     else:
         raise TypeError('period_where must be None, int, or list')
 

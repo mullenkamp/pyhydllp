@@ -287,7 +287,7 @@ class Hydllp(object):
             site = i['site']
             df_temp = pd.DataFrame(i['variables'])
             df_temp['site'] = site
-            df1 = pd.concat([df1, df_temp])
+            df1 = pd.concat([df1, df_temp], sort=False)
 
         ## Mangling
         df2 = df1.copy().drop('subdesc', axis=1)

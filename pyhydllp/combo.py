@@ -200,7 +200,7 @@ def sites_var_periods(self, server, database, varto=None, sites=None, data_sourc
 
         flow_sites_period = sites_period[sites_period.varto.isin(varto_list)].copy().drop(['var_name', 'units'], axis=1)
 
-        sites_var_period = pd.concat([flow_rate_sites_period, flow_sites_period])
+        sites_var_period = pd.concat([flow_rate_sites_period, flow_sites_period], sort=False)
         sites_var_period = sites_var_period[['site', 'varfrom', 'varto', 'from_date', 'to_date']]
     else:
         sites_var_period = sites_period[sites_period.varto.isin(varto_list)].copy().drop(['var_name', 'units'], axis=1)
