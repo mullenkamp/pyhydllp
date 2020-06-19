@@ -10,7 +10,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 name = 'pyhydllp'
 main_package = 'pyhydllp'
 # datasets = 'datasets'
-version = '1.1.3'
+version = '1.1.5'
 
 # The below code is for readthedocs. To have sphinx/readthedocs interact with
 # the contained package, readthedocs needs to build the package. But the dependencies
@@ -72,7 +72,7 @@ setup(
     #
     # This field corresponds to the "Description" metadata field:
     # https://packaging.python.org/specifications/core-metadata/#description-optional
-    long_description=long_description,  # Optional
+    #long_description=long_description,  # Optional
 
     # This should be a valid link to your project's main homepage.
     #

@@ -8,7 +8,7 @@ import pandas as pd
 import pdsql
 
 
-def rating_changes(server, database, sites=None, from_mod_date=None, to_mod_date=None):
+def rating_changes(server, database, sites=None, from_mod_date=None, to_mod_date=None, username=None, password=None):
     """
     Function to determine flow rating changes during a specified period.
 
@@ -47,7 +47,7 @@ def rating_changes(server, database, sites=None, from_mod_date=None, to_mod_date
     else:
             where_in = None
 
-    rate_hed = pdsql.mssql.rd_sql(server, database, table_hed, fields_hed, where_in, rename_cols=names_hed, from_date=from_mod_date, to_date=to_mod_date, date_col='RELDATE')
+    rate_hed = pdsql.mssql.rd_sql(server, database, table_hed, fields_hed, where_in, rename_cols=names_hed, from_date=from_mod_date, to_date=to_mod_date, date_col='RELDATE', username=username, password=password)
     if rate_hed.empty:
         return pd.DataFrame()
     else:
@@ -55,7 +55,7 @@ def rating_changes(server, database, sites=None, from_mod_date=None, to_mod_date
 
         where_per = {'STATION': rate_hed['site'].astype(str).unique().tolist()}
 
-        rate_per = pdsql.mssql.rd_sql(server, database, table_per, fields_per, where_per, rename_cols=names_per, where_op='OR')
+        rate_per = pdsql.mssql.rd_sql(server, database, table_per, fields_per, where_per, rename_cols=names_per, where_op='OR', username=username, password=password)
         rate_per['site'] = rate_per['site'].str.strip()
         time1 = pd.to_timedelta(rate_per['stime'].astype(int) // 100, unit='H') + pd.to_timedelta(rate_per['stime'].astype(int) % 100, unit='m')
         rate_per['sdate'] = rate_per['sdate'] + time1
@@ -71,7 +71,7 @@ def rating_changes(server, database, sites=None, from_mod_date=None, to_mod_date
         return rate_per2[['site', 'varfrom', 'varto', 'from_date']]
 
 
-def sql_sites_var(server, database, varto=None, data_source='A'):
+def sql_sites_var(server, database, varto=None, data_source='A', username=None, password=None):
     """
     Function to extract all of the sites associated with specific varto codes. Calls to the site data stored in an SQL server.
 
@@ -111,7 +111,7 @@ def sql_sites_var(server, database, varto=None, data_source='A'):
     else:
         raise TypeError('period_where must be None, int, or list')
 
-    period1 = pdsql.mssql.rd_sql(server, database, period_tab, period_cols, where_in=period_where, rename_cols=period_names)
+    period1 = pdsql.mssql.rd_sql(server, database, period_tab, period_cols, where_in=period_where, rename_cols=period_names, username=username, password=password)
     period1.loc[:, 'site'] = period1.site.str.strip()
 
     ### Determine the variables to extract
@@ -129,7 +129,7 @@ def sql_sites_var(server, database, varto=None, data_source='A'):
     return period3
 
 
-def gaugings(server, database, sites=None, mtypes=['wl', 'flow'], from_date=None, to_date=None, from_mod_date=None, to_mod_date=None, stacked=False):
+def gaugings(server, database, sites=None, mtypes=['wl', 'flow'], from_date=None, to_date=None, from_mod_date=None, to_mod_date=None, stacked=False, username=None, password=None):
     """
     Function to extract gaugings data from Hydstra SQL.
 
@@ -185,9 +185,9 @@ def gaugings(server, database, sites=None, mtypes=['wl', 'flow'], from_date=None
         where_in = None
 
     if isinstance(from_mod_date, str) | isinstance(to_mod_date, str):
-        g1 = pdsql.mssql.rd_sql(server, database, 'GAUGINGS', cols, where_in, from_date=from_mod_date, to_date=to_mod_date, date_col='DATEMOD', rename_cols=rename_cols)
+        g1 = pdsql.mssql.rd_sql(server, database, 'GAUGINGS', cols, where_in, from_date=from_mod_date, to_date=to_mod_date, date_col='DATEMOD', rename_cols=rename_cols, username=username, password=password)
     else:
-        g1 = pdsql.mssql.rd_sql(server, database, 'GAUGINGS', cols, where_in, from_date=from_date, to_date=to_date, date_col='MEAS_DATE', rename_cols=rename_cols)
+        g1 = pdsql.mssql.rd_sql(server, database, 'GAUGINGS', cols, where_in, from_date=from_date, to_date=to_date, date_col='MEAS_DATE', rename_cols=rename_cols, username=username, password=password)
     g1.site = g1.site.str.strip()
     g1 = g1[g1.site.notnull()].copy()
     g1.loc[~(g1.time >= 100), 'time'] = 1200

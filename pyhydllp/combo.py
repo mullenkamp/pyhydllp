@@ -9,7 +9,7 @@ import pdsql
 from pyhydllp import sql, hydllp
 
 
-def get_ts_data_bulk(self, server, database, varto, sites=None, data_source='A', from_date=None, to_date=None, from_mod_date=None, to_mod_date=None, interval='day', qual_codes=[30, 20, 10, 11, 21, 18], concat_data=False, cols_convert=None, code_convert=None, qual_code_convert=None, export=None):
+def get_ts_data_bulk(self, server, database, varto, sites=None, data_source='A', from_date=None, to_date=None, from_mod_date=None, to_mod_date=None, interval='day', qual_codes=[30, 20, 10, 11, 21, 18], concat_data=False, cols_convert=None, code_convert=None, qual_code_convert=None, export=None, username=None, password=None):
     """
     Function to read in data from Hydstra's database using HYDLLP. This function extracts all sites with a specific variable code (varto).
 
@@ -83,7 +83,7 @@ def get_ts_data_bulk(self, server, database, varto, sites=None, data_source='A',
             chg1 = chg1.drop('to_date', axis=1)
         if 140 in varto_list:
             sites_flow = sites_var_period[(sites_var_period.varfrom != sites_var_period.varto) & (sites_var_period.varto == 140)]
-            chg2 = sql.rating_changes(server=server, database=database, sites=sites_flow.site.unique().tolist(), from_mod_date=from_mod_date, to_mod_date=to_mod_date)
+            chg2 = sql.rating_changes(server=server, database=database, sites=sites_flow.site.unique().tolist(), from_mod_date=from_mod_date, to_mod_date=to_mod_date, username=username, password=password)
             chg1 = pd.concat([chg1, chg2])
         if chg1.empty:
             print('No data has been changed since last export')
@@ -162,7 +162,7 @@ def get_ts_data_bulk(self, server, database, varto, sites=None, data_source='A',
         return data
 
 
-def sites_var_periods(self, server, database, varto=None, sites=None, data_source='A'):
+def sites_var_periods(self, server, database, varto=None, sites=None, data_source='A', username=None, password=None):
     """
     Function to determine the record periods for Hydstra sites/variables.
 
@@ -184,7 +184,7 @@ def sites_var_periods(self, server, database, varto=None, sites=None, data_sourc
     DataFrame
         With site, varfrom, varto, from_date, and to_date.
     """
-    sites_var = sql.sql_sites_var(varto=varto, data_source=data_source, server=server, database=database)
+    sites_var = sql.sql_sites_var(varto=varto, data_source=data_source, server=server, database=database, username=username, password=password)
     if isinstance(sites, list):
         sites_var = sites_var[sites_var.site.isin([str(i) for i in sites])]
     sites_list = sites_var.site.unique().tolist()
